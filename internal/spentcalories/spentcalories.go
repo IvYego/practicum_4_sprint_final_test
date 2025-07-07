@@ -11,7 +11,7 @@ import (
 
 // Основные константы, необходимые для расчетов.
 const (
-	lenStep                    = 0.65 // средняя длина шага.
+	//lenStep                    = 0.65 // средняя длина шага.
 	mInKm                      = 1000 // количество метров в километре.
 	minInH                     = 60   // количество минут в часе.
 	stepLengthCoefficient      = 0.45 // коэффициент для расчета длины шага на основе роста.
@@ -68,7 +68,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	steps, typeTrain, timeTrain, err := parseTraining(data)
 	if err != nil {
 		log.Println("Ошибка при разборе данных:", err)
-		return "", err
+		return "", fmt.Errorf("error parsing training data: %w", err)
 	}
 
 	distKm := distance(steps, height)
@@ -81,13 +81,13 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		calories, err = RunningSpentCalories(steps, weight, height, timeTrain)
 		if err != nil {
 			log.Println("Ошибка при подсчёте калорий (Бег):", err)
-			return "", err
+			return "", fmt.Errorf("error parsing training data: %w", err)
 		}
 	case "Ходьба":
 		calories, err = WalkingSpentCalories(steps, weight, height, timeTrain)
 		if err != nil {
 			log.Println("Ошибка при подсчёте калорий (Ходьба):", err)
-			return "", err
+			return "", fmt.Errorf("error parsing training data: %w", err)
 		}
 	default:
 		err := errors.New("неизвестный тип тренировки")
@@ -106,22 +106,22 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	// TODO: реализовать функцию
 	if steps <= 0 {
 		log.Println("ошибка")
-		return 0, errors.New("некорректные данные шагов")
+		return 0, fmt.Errorf("некорректные данные количества шагов: %v", steps)
 	}
 
 	if weight <= 0 {
 		log.Println("ошибка")
-		return 0, errors.New("некорректные данные веса")
+		return 0, fmt.Errorf("некорректные данные веса: %v", weight)
 	}
 
 	if height <= 0 {
 		log.Println("ошибка")
-		return 0, errors.New("некорректные данные роста")
+		return 0, fmt.Errorf("некорректные данные роста: %v", height)
 	}
 
 	if duration <= 0 {
 		log.Println("ошибка")
-		return 0, errors.New("некорректные данные времени")
+		return 0, fmt.Errorf("некорректные данные продолжительности времени: %v", duration)
 	}
 
 	averageSpeed := meanSpeed(steps, height, duration)
@@ -134,19 +134,19 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 func WalkingSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	// TODO: реализовать функцию
 	if steps <= 0 {
-		return 0, errors.New("некорректные данные шагов")
+		return 0, fmt.Errorf("некорректные данные количества шагов: %v", steps)
 	}
 
 	if weight <= 0 {
-		return 0, errors.New("некорректные данные веса")
+		return 0, fmt.Errorf("некорректные данные веса: %v", weight)
 	}
 
 	if height <= 0 {
-		return 0, errors.New("некорректные данные роста")
+		return 0, fmt.Errorf("некорректные данные роста: %v", height)
 	}
 
 	if duration <= 0 {
-		return 0, errors.New("некорректные данные времени")
+		return 0, fmt.Errorf("некорректные данные продолжительности времени: %v", duration)
 	}
 
 	averageSpeed := meanSpeed(steps, height, duration)
